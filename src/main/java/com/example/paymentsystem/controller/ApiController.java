@@ -2,13 +2,19 @@ package com.example.paymentsystem.controller;
 
 import com.example.paymentsystem.dto.*;
 import com.example.paymentsystem.service.*;
+
 import org.springframework.web.bind.annotation.*;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 import java.math.BigDecimal;
+
+import com.example.paymentsystem.exception.BadRequestException;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -53,7 +59,7 @@ public class ApiController {
 
    @PostMapping("/transfer")
    public ResponseEntity<?> transfer(HttpServletRequest request,
-                                  @valid
+                                  @Valid
                                   @RequestBody TransferRequest req,
                                   @RequestHeader("Idempotency-Key") String referenceId) {
 
@@ -63,7 +69,7 @@ public class ApiController {
        throw new BadRequestException("Invalid amount");
     }
     
-    if (senderId.equalsreq.getReceiverId(){
+    if (senderId.equals(req.getReceiverId())){
         throw new BadRequestException("Cannot transfer to self");
     }
 
@@ -87,7 +93,13 @@ public BigDecimal balance(HttpServletRequest request) {
 }
 
     @GetMapping("/transactions/{userId}")
-    public Object history(@PathVariable Long userId) {
+    public Object history(HttpServletRequest request
+    ,@PathVariable Long userId) {
+        Long loggedInUser = (Long) request.getAttribute("userId");
+
+if (!loggedInUser.equals(userId)) {
+    throw new BadRequestException("Access denied");
+}
         return txn.history(userId);
     }
 }
