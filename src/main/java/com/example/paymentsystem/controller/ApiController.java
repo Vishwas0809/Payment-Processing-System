@@ -44,7 +44,7 @@ public class ApiController {
    Long userId = (Long) request.getAttribute("userId");
 
    if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-      throw new RuntimeException("Invalid amount");
+      throw new BadRequestException("Invalid amount");
    }
 
    wallet.addMoney(userId, amount);
@@ -53,17 +53,18 @@ public class ApiController {
 
    @PostMapping("/transfer")
    public ResponseEntity<?> transfer(HttpServletRequest request,
+                                  @valid
                                   @RequestBody TransferRequest req,
                                   @RequestHeader("Idempotency-Key") String referenceId) {
 
     Long senderId = (Long) request.getAttribute("userId");
 
     if (req.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-       throw new RuntimeException("Invalid amount");
+       throw new BadRequestException("Invalid amount");
     }
     
     if (senderId.equalsreq.getReceiverId(){
-        throw new RuntimeException("Cannot transfer to self");
+        throw new BadRequestException("Cannot transfer to self");
     }
 
     txn.transfer(senderId,
@@ -77,10 +78,13 @@ public class ApiController {
     ));
 }
 
-    @GetMapping("/balance/{userId}")
-    public BigDecimal balance(@PathVariable Long userId) {
-        return wallet.getBalance(userId);
-    }
+ @GetMapping("/balance")
+public BigDecimal balance(HttpServletRequest request) {
+
+    Long userId = (Long) request.getAttribute("userId");
+
+    return wallet.getBalance(userId);
+}
 
     @GetMapping("/transactions/{userId}")
     public Object history(@PathVariable Long userId) {

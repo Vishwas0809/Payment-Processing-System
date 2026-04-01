@@ -46,7 +46,7 @@ The focus of this project was to handle things like transaction safety, duplicat
 ### Transfer
 
 * Transfers are handled inside a transaction
-* Uses pessimistic locking to avoid race conditions
+* Uses optimistic locking to avoid race conditions
 * Idempotency key ensures same request is not processed twice
 
 ## API Endpoints
