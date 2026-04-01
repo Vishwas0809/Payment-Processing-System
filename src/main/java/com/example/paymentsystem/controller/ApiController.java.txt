@@ -63,10 +63,8 @@ public class ApiController {
     }
     
     if (senderId.equalsreq.getReceiverId(){
-    
-    throw new RuntimeException("Cannot transfer to self");
-    
-}
+        throw new RuntimeException("Cannot transfer to self");
+    }
 
     txn.transfer(senderId,
                  req.getReceiverId(),
