@@ -1,0 +1,39 @@
+
+-- USERS TABLE
+CREATE TABLE users (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    name NVARCHAR(100),
+    email NVARCHAR(100) NOT NULL UNIQUE,
+    password NVARCHAR(255) NOT NULL
+);
+
+-- WALLETS TABLE
+CREATE TABLE wallets (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    user_id BIGINT NOT NULL UNIQUE,
+    balance DECIMAL(15,2) NOT NULL DEFAULT 0,
+    version BIGINT DEFAULT 0,
+
+    CONSTRAINT fk_wallet_user
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- TRANSACTIONS TABLE
+CREATE TABLE transactions (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    sender_id BIGINT NOT NULL,
+    receiver_id BIGINT NOT NULL,
+    amount DECIMAL(15,2) NOT NULL CHECK (amount > 0),
+    status NVARCHAR(50) NOT NULL,
+    reference_id NVARCHAR(100) UNIQUE,
+    created_at DATETIME DEFAULT GETDATE(),
+
+    CONSTRAINT fk_tx_sender FOREIGN KEY (sender_id) REFERENCES users(id),
+    CONSTRAINT fk_tx_receiver FOREIGN KEY (receiver_id) REFERENCES users(id)
+);
+
+-- INDEXES
+CREATE INDEX idx_user_email ON users(email);
+CREATE INDEX idx_wallet_user_id ON wallets(user_id);
+CREATE INDEX idx_tx_sender ON transactions(sender_id);
+CREATE INDEX idx_tx_receiver ON transactions(receiver_id);
